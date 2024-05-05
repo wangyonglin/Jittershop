@@ -1,0 +1,2 @@
+# Jittershop
+Jittershop for QT

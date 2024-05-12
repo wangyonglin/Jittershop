@@ -1,20 +1,19 @@
 #include "AVDemuxer.h"
 
 AVDemuxer::AVDemuxer(QObject *parent)
-    : AVThreader{parent}
-
+    : AVThreader{parent},
+    audio_pkt_queue(new AVPacketQueue(this)),
+    video_pkt_queue(new AVPacketQueue(this))
 {
 }
 
 AVDemuxer::~AVDemuxer()
 {
     qDebug() << "~AVDemuxer()";
-}
-
-void AVDemuxer::loadParameters(AVPacketQueue *audio_pkt_queue, AVPacketQueue *video_pkt_queue)
-{
-    this->audio_pkt_queue=audio_pkt_queue;
-    this->video_pkt_queue=video_pkt_queue;
+    delete audio_pkt_queue;
+    audio_pkt_queue=nullptr;
+    delete video_pkt_queue;
+    video_pkt_queue=nullptr;
 }
 
 bool AVDemuxer::buildDemuxer(QString url)
@@ -68,6 +67,12 @@ void AVDemuxer::stop()
     AVThreader::stop();
 }
 
+void AVDemuxer::clear()
+{
+    audio_pkt_queue->clear();
+    video_pkt_queue->clear();
+}
+
 void AVDemuxer::loopRunnable()
 {
     if(state() ==Running && !frameFinished){
@@ -94,13 +99,13 @@ void AVDemuxer::loopRunnable()
         if (pkt->stream_index == audio_stream_index)
         {
             audio_pkt_queue->enqueue(pkt);
-           // qDebug() << "audio pkt size:" <<audio_pkt_queue->size();
+            // qDebug() << "audio pkt size:" <<audio_pkt_queue->size();
 
         }
         else if(pkt->stream_index == video_stream_index)
         {
             video_pkt_queue->enqueue(pkt);
-           //  qDebug() << "video pkt size:" <<video_pkt_queue->size();
+            //  qDebug() << "video pkt size:" <<video_pkt_queue->size();
         }
         av_packet_free(&pkt);
     }

@@ -29,10 +29,7 @@ private:
     AudioRender * audio_render=nullptr;
     VideoDecoder *videoDecoder=nullptr;
     VideoRender *videoRender=nullptr;
-    AVPacketQueue * audio_pkt_queue=nullptr;
-    AVPacketQueue * video_pkt_queue=nullptr;
-    AVFrameQueue * audio_frame_queue=nullptr;
-    AVFrameQueue * video_frame_queue=nullptr;
+
 signals:
     void finished();
 public slots:

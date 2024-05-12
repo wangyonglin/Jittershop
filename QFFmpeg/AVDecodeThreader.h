@@ -1,18 +1,19 @@
-#ifndef AVFRAMETHREADER_H
-#define AVFRAMETHREADER_H
+#ifndef AVDECODETHREADER_H
+#define AVDECODETHREADER_H
 
 #include "QFFmpeg.h"
 #include "AVThreader.h"
 #include <QObject>
 
-class AVFrameThreader : public AVThreader
+class AVDecodeThreader : public AVThreader
 {
     Q_OBJECT
 public:
-    explicit AVFrameThreader(QObject *parent = nullptr);
+    explicit AVDecodeThreader(QObject *parent = nullptr);
     void loadParameters(AVCodecParameters *codecpar,AVPacketQueue * pkt_queue,AVFrameQueue *frame_queue);
     virtual void start(Priority pri= InheritPriority);
     virtual void stop();
+    virtual void clear();
     AVCodecContext * getCodecContext();
 public:
 
@@ -23,7 +24,10 @@ private:
     AVCodecParameters *codecpar=nullptr;
     bool frameFinished= false;
     virtual void loopRunnable();
+    AVCodecContext *OpenDecoder(AVCodecParameters *codecpar);
+    void CloseDecoder(AVCodecContext *codec_ctx);
+    void BuildDecoder(AVCodecContext *codec_ctx, AVPacketQueue *pkt_queue, AVFrameQueue *frame_queue);
 signals:
 };
 
-#endif // AVFRAMETHREADER_H
+#endif // AVDECODETHREADER_H

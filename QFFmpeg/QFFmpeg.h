@@ -82,6 +82,8 @@ void FreeDecoder(AVCodecContext *codec_ctx);
 
 void ReceiveDecoder(AVCodecContext *codec_ctx,AVPacketQueue *pkt_queue,AVFrameQueue *frame_queue);
 void FreeReceiveContext(AVCodecContext *codec_ctx);
+
+AVFrame * ReceiveAVFrame(AVCodecContext *codec_ctx,AVPacketQueue *pkt_queue);
 };
 
 #endif // QFFMPEG_H

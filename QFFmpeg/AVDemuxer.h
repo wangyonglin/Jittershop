@@ -23,10 +23,9 @@ public:
     bool buildDemuxer(QString url);
     virtual void start(Priority pri = InheritPriority);
     virtual void stop();
+    virtual void clear();
 
 private:
-    AVPacketQueue * audio_pkt_queue=nullptr;
-    AVPacketQueue * video_pkt_queue=nullptr;
     virtual void loopRunnable();
     bool frameFinished =false;
     QString url;
@@ -37,6 +36,8 @@ private:
     int64_t expand_size=0;
 
 public:
+    AVPacketQueue * audio_pkt_queue=nullptr;
+    AVPacketQueue * video_pkt_queue=nullptr;
     int audio_stream_index=-1;
     int video_stream_index=-1;
     AVCodecParameters * audio_codecpar=nullptr;

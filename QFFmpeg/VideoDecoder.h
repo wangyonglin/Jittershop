@@ -8,7 +8,7 @@
 #include "VideoRender.h"
 #include <QObject>
 #include "AVFrameQueue.h"
-#include "AVFrameThreader.h"
+#include "AVDecodeThreader.h"
 
 class VideoDecoder : public AVThreader
 {
@@ -16,24 +16,20 @@ class VideoDecoder : public AVThreader
 public:
     explicit VideoDecoder(QObject *parent = nullptr);
     void loadParameters(AVController *controller,
-                        AVDemuxer *demuxer,
-                        AVPacketQueue *video_pkt_queue,
-                         AVFrameQueue * video_frame_queue);
+                        AVDemuxer *demuxer);
     virtual void start(Priority pri = InheritPriority);
     virtual void stop();
     virtual void pause();
     virtual void resume();
 private:
     virtual void loopRunnable();
-
     bool frameFinished= false;
     int video_stream_time=0;
     AVController * controller=nullptr;
     AVDemuxer *demuxer=nullptr;
 
-    AVFrameThreader *freme_threader=nullptr;
-    AVPacketQueue *video_pkt_queue=nullptr;
-    AVFrameQueue * video_frame_queue=nullptr;
+    AVDecodeThreader decode_thd;
+    AVFrameQueue *frame_queue=nullptr;
 
 public slots:
 signals:

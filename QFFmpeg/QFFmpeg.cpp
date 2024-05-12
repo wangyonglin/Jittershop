@@ -353,6 +353,36 @@ void QFFmpeg::ReceiveDecoder(AVCodecContext *codec_ctx,AVPacketQueue *pkt_queue,
     av_frame_free(&frame);
 }
 
+AVFrame * QFFmpeg::ReceiveAVFrame(AVCodecContext *codec_ctx,AVPacketQueue *pkt_queue)
+{
+    if(!codec_ctx)return nullptr;
+    if(pkt_queue->isEmpty())return nullptr;
+    AVPacket * pkt= pkt_queue->dequeue();
+    if(!pkt)return nullptr;
+    int ret = avcodec_send_packet(codec_ctx, pkt);
+    av_packet_free(&pkt);
+    if (ret < 0)
+    {
+        char errmsg[AV_ERROR_MAX_STRING_SIZE];
+        av_make_error_string(errmsg,AV_ERROR_MAX_STRING_SIZE, ret);
+        qDebug() << "avcodec_send_packet failed" << errmsg;
+        return nullptr;
+    }
+    AVFrame* frame = av_frame_alloc();
+    if(!frame)return nullptr;
+    ret = avcodec_receive_frame(codec_ctx, frame);
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF){
+        return nullptr;
+    }else if (ret < 0) {
+        char errmsg[AV_ERROR_MAX_STRING_SIZE];
+        av_make_error_string(errmsg,AV_ERROR_MAX_STRING_SIZE, ret);
+        qDebug() << "avcodec_receive_frame failed" << errmsg;
+        return nullptr;
+    }
+  //  av_frame_free(&frame);
+    return frame;
+}
+
 void QFFmpeg::FreeReceiveContext(AVCodecContext *codec_ctx){
     if(codec_ctx) avcodec_free_context(&codec_ctx);
 }

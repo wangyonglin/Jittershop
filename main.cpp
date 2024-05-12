@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
         }
     }
     MainWidget w;
+    w.setWindowTitle("Jittershop 视频流播放器(ffmpeg内核) - 骚包版");
     w.show();
     return a.exec();
 }

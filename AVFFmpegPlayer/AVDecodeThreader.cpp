@@ -30,6 +30,7 @@ void AVDecodeThreader::stop()
 
 void AVDecodeThreader::clear()
 {
+    //frameFinished=true;
     frame_queue->clear();
 }
 

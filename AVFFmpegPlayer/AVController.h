@@ -23,6 +23,8 @@ public:
     void WriteIODevice(const char* data, qint64 len);
     void FreeIODevice();
     void StartSysClockMs();
+
+    void clearStartTime();
     int64_t now_ms();
     int64_t GetSysClockMs();
     int64_t audio_frame_dur = 0; //一帧音频需要经过的时间

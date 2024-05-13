@@ -69,6 +69,7 @@ void AVDemuxer::stop()
 
 void AVDemuxer::clear()
 {
+    //frameFinished=true;
     audio_pkt_queue->clear();
     video_pkt_queue->clear();
 }

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QApplication>
-#include "QFFmpeg/AVFFmpegPlayer.h"
+#include "AVFFmpegPlayer/AVFFmpegPlayer.h"
 class MainWidget : public QWidget
 {
     Q_OBJECT

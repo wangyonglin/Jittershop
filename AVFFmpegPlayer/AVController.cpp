@@ -58,6 +58,11 @@ void AVController::StartSysClockMs()
     }
 }
 
+void AVController::clearStartTime()
+{
+    player_start_time_ms=0;
+}
+
 int64_t AVController::now_ms()
 {
     auto now = std::chrono::system_clock::now();

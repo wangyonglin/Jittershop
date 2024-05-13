@@ -32,6 +32,8 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
         player->pause();
     }else if(event->key() == Qt::Key_F12){
         player->resume();
+    }else if(event->key() == Qt::Key_F8){
+         player->play("/home/wangyonglin/视频/oceans.mp4");
     }
 }
 

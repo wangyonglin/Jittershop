@@ -11,7 +11,7 @@ AVFFmpegPlayer::AVFFmpegPlayer(QWidget *parent)
 
 {
     resize(800,600);
-    StartSysClockMs();
+
     audioDecoder->loadParameters(this,demuxer);
     videoDecoder->loadParameters(this,demuxer);
   // videoRender->resize(size());
@@ -27,6 +27,7 @@ void AVFFmpegPlayer::play(QString url)
 {
 
     qDebug() << "AVFFmpegPlayer::play(QString url)";
+    StartSysClockMs();
     demuxer->buildDemuxer(url);
     demuxer->start();
     audioDecoder->start();

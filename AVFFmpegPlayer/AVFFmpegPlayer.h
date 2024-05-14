@@ -3,7 +3,7 @@
 
 #include "AVDemuxer.h"
 #include "AudioDecoder.h"
-#include "AVController.h"
+#include "AVOutput.h"
 #include "AudioRender.h"
 #include "VideoDecoder.h"
 #include "VideoRender.h"
@@ -12,7 +12,7 @@
 #include <QObject>
 #include <QString>
 
-class AVFFmpegPlayer : public AVController
+class AVFFmpegPlayer : public QWidget
 {
     Q_OBJECT
 public:

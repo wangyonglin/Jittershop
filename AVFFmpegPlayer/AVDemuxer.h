@@ -1,6 +1,6 @@
 #ifndef AVDEMUXER_H
 #define AVDEMUXER_H
-#include "AVController.h"
+#include "AVOutput.h"
 #include "QFFmpeg.h"
 #include "AVThreader.h"
 #include "JitterBuffer.h"
@@ -25,14 +25,20 @@ public:
     virtual void stop();
     virtual void clear();
 
+
+    int64_t getCurrentTimer();
 private:
+    void initStartTimer();
+    void clearStartTimer();
+    int64_t now_ms();
     virtual void loopRunnable();
+    int64_t audio_frame_dur = 0; //一帧音频需要经过的时间
+    int64_t video_frame_dur= 0; // 一帧视频需要经过的时间
+    int64_t player_start_time_ms = 0;
     bool frameFinished =false;
     QString url;
     AVFormatContext * ifmt_ctx=nullptr;
     char * strurl=nullptr;
-    int64_t audio_frame_dur=0;
-    int64_t video_frame_dur=0;
     int64_t expand_size=0;
 
 public:

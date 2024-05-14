@@ -1,9 +1,9 @@
 HEADERS += \
-    $$PWD/AVController.h \
     $$PWD/AVDecodeThreader.h \
     $$PWD/AVDemuxer.h \
     $$PWD/AVFFmpegPlayer.h \
     $$PWD/AVFrameQueue.h \
+    $$PWD/AVOutput.h \
     $$PWD/AVPacketQueue.h \
     $$PWD/AVResampler.h \
     $$PWD/AVThreader.h \
@@ -15,11 +15,11 @@ HEADERS += \
     $$PWD/VideoRender.h
 
 SOURCES += \
-    $$PWD/AVController.cpp \
     $$PWD/AVDecodeThreader.cpp \
     $$PWD/AVDemuxer.cpp \
     $$PWD/AVFFmpegPlayer.cpp \
     $$PWD/AVFrameQueue.cpp \
+    $$PWD/AVOutput.cpp \
     $$PWD/AVPacketQueue.cpp \
     $$PWD/AVResampler.cpp \
     $$PWD/AVThreader.cpp \

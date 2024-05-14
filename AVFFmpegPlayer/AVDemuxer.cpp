@@ -51,6 +51,7 @@ bool AVDemuxer::buildDemuxer(QString url)
         video_pts_begin = ifmt_ctx->streams[video_stream_index]->start_time;
     }
     qInfo() << ("AVDemuxer buildDemuxer leave");
+
     return true;
 }
 
@@ -58,6 +59,7 @@ bool AVDemuxer::buildDemuxer(QString url)
 void AVDemuxer::start(Priority pri)
 {
     frameFinished=false;
+    initStartTimer();
     AVThreader::start(pri);
 }
 
@@ -65,11 +67,11 @@ void AVDemuxer::stop()
 {
     frameFinished= true;
     AVThreader::stop();
+    clearStartTimer();
 }
 
 void AVDemuxer::clear()
 {
-    //frameFinished=true;
     audio_pkt_queue->clear();
     video_pkt_queue->clear();
 }
@@ -113,3 +115,32 @@ void AVDemuxer::loopRunnable()
 
 }
 
+void AVDemuxer::initStartTimer()
+{
+    if (this->player_start_time_ms == 0)
+    {
+        this->player_start_time_ms = now_ms();
+    }
+}
+
+void AVDemuxer::clearStartTimer()
+{
+    this->player_start_time_ms = 0;
+}
+
+
+
+int64_t AVDemuxer::now_ms()
+{
+    auto now = std::chrono::system_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+}
+
+int64_t AVDemuxer::getCurrentTimer()
+{
+    if (this->player_start_time_ms != 0)
+    {
+        return  now_ms() - this->player_start_time_ms;
+    }
+    return 0;
+}

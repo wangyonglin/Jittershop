@@ -4,7 +4,7 @@
 
 
 AudioDecoder::AudioDecoder(QObject *parent)
-    : AVThreader{parent},
+    : AVThreader(parent),
     frame_queue(new AVFrameQueue(this))
 {
 
@@ -16,7 +16,7 @@ void AudioDecoder::loopRunnable()
 {
     if(!demuxer)return;
     if(state()==Running && !frameFinished){
-        if (audio_stream_time >controller->GetSysClockMs())
+        if (audio_stream_time > demuxer->getCurrentTimer())
         {
             return;
         }
@@ -38,26 +38,24 @@ int AudioDecoder::ResampleAudio(AVFrame *frame)
 
     // 把AVFrame里面的数据拷贝到，预备的src_data里面
     int res=-1;
-    if (!audio_render)
-    {
-        audio_render= new AudioRender(this,controller);
-
-        //创建重采样信息
-        int src_ch_layout = decode_thd.getCodecContext()->channel_layout;
-        int src_rate = decode_thd.getCodecContext()->sample_rate;
-        enum AVSampleFormat src_sample_fmt = decode_thd.getCodecContext()->sample_fmt;
+    // if (!audio_render->initSuccessful())
+    // {
+    //     //创建重采样信息
+    //     int src_ch_layout = decode_thd.getCodecContext()->channel_layout;
+    //     int src_rate = decode_thd.getCodecContext()->sample_rate;
+    //     enum AVSampleFormat src_sample_fmt = decode_thd.getCodecContext()->sample_fmt;
 
 
-        //aac编码一般是这个,实际这个值只能从解码后的数据里面获取，所有这个初始化过程可以放在解码出第一帧的时候
-        //  int src_nb_samples = frame->nb_samples;
+    //     //aac编码一般是这个,实际这个值只能从解码后的数据里面获取，所有这个初始化过程可以放在解码出第一帧的时候
+    //     //  int src_nb_samples = frame->nb_samples;
 
-        audio_render->InitSwrResample(src_ch_layout, AV_CH_LAYOUT_STEREO,
-                                      src_rate, 44100,
-                                      src_sample_fmt, AV_SAMPLE_FMT_S16,
-                                      frame->nb_samples);
+    //     audio_render->InitSwrResample(src_ch_layout, AV_CH_LAYOUT_STEREO,
+    //                                   src_rate, 44100,
+    //                                   src_sample_fmt, AV_SAMPLE_FMT_S16,
+    //                                   decode_thd.getCodecContext()->frame_size);
 
 
-    }
+    // }
 
     audio_render->WriteInput(frame);
     res=   audio_render->SwrConvert();
@@ -70,11 +68,11 @@ int AudioDecoder::ResampleAudio(AVFrame *frame)
 
 
 
-void AudioDecoder::loadParameters(AVController *controller,
-                                  AVDemuxer *demuxer)
+void AudioDecoder::loadParameters(AVDemuxer *demuxer,AudioRender *render)
 {
-    this->controller=controller;
+
     this->demuxer=demuxer;
+    this->audio_render=render;
 
 }
 
@@ -84,6 +82,7 @@ void AudioDecoder::start(Priority pri)
     decode_thd.loadParameters(demuxer->audio_codecpar,demuxer->audio_pkt_queue,frame_queue);
     decode_thd.clear();
     decode_thd.start();
+    audio_render->InitSwrResample(decode_thd.getCodecContext(),AV_CH_LAYOUT_STEREO,44100,AV_SAMPLE_FMT_S16);
     AVThreader::start(pri);
 }
 
@@ -95,6 +94,7 @@ void AudioDecoder::stop()
     decode_thd.stop();
     decode_thd.clear();
     AVThreader::stop();
+    audio_render->Close();
 
 }
 

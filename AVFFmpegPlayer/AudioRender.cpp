@@ -1,9 +1,9 @@
 #include "AudioRender.h"
 
 
-AudioRender::AudioRender(QObject *parent, AVController *controller)
-: QObject{parent},
-    controller(controller)
+AudioRender::AudioRender(QObject *parent)
+    : AVOutput{parent}
+
 {
 
 }
@@ -14,14 +14,12 @@ AudioRender::~AudioRender()
 }
 
 
-
 int  AudioRender::InitSwrResample(int64_t src_ch_layout, int64_t dst_ch_layout,
                                  int src_rate, int dst_rate,
                                  enum AVSampleFormat src_sample_fmt, enum AVSampleFormat dst_sample_fmt,
                                  int src_nb_samples)
 {
 
-    if(!controller)return -1;
     src_sample_fmt_ = src_sample_fmt;
     dst_sample_fmt_ = dst_sample_fmt;
 
@@ -29,7 +27,7 @@ int  AudioRender::InitSwrResample(int64_t src_ch_layout, int64_t dst_ch_layout,
     /* create resampler context */
     swr_ctx = swr_alloc();
     if (!swr_ctx) {
-       qDebug()  << "Could not allocate resampler context";
+        qDebug()  << "Could not allocate resampler context";
         ret = AVERROR(ENOMEM);
         return ret;
     }
@@ -45,7 +43,7 @@ int  AudioRender::InitSwrResample(int64_t src_ch_layout, int64_t dst_ch_layout,
 
     /* initialize the resampling context */
     if ((ret = swr_init(swr_ctx)) < 0) {
-       qDebug()  << "Failed to initialize the resampling context";
+        qDebug()  << "Failed to initialize the resampling context";
         return -1;
     }
 
@@ -63,7 +61,7 @@ int  AudioRender::InitSwrResample(int64_t src_ch_layout, int64_t dst_ch_layout,
     ret = av_samples_alloc_array_and_samples(&src_data_, &src_linesize, src_nb_channels,
                                              src_nb_samples, src_sample_fmt, 0);
     if (ret < 0) {
-       qDebug()  << "Could not allocate source samples\n";
+        qDebug()  << "Could not allocate source samples\n";
         return -1;
     }
     src_nb_samples_ = src_nb_samples;
@@ -77,12 +75,86 @@ int  AudioRender::InitSwrResample(int64_t src_ch_layout, int64_t dst_ch_layout,
     ret = av_samples_alloc_array_and_samples(&dst_data_, &dst_linesize, dst_nb_channels,
                                              dst_nb_samples_, dst_sample_fmt, 0);
     if (ret < 0) {
-       qDebug()  << "Could not allocate destination samples";
+        qDebug()  << "Could not allocate destination samples";
         return -1;
     }
 
     int data_size = av_get_bytes_per_sample(dst_sample_fmt_);
-    controller->InitIODevice(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
+    InitIODevice(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
+}
+
+
+int  AudioRender::InitSwrResample(AVCodecContext * dec_ctx,
+                                 int64_t dst_ch_layout,
+                                 int dst_rate,
+                                 enum AVSampleFormat dst_sample_fmt)
+{
+
+    int64_t src_ch_layout=dec_ctx->channel_layout;
+    int  src_rate=dec_ctx->sample_rate;
+    enum AVSampleFormat src_sample_fmt=dec_ctx->sample_fmt;
+    int src_nb_samples=dec_ctx->frame_size;
+    src_sample_fmt_ = dec_ctx->sample_fmt;
+    dst_sample_fmt_ = dst_sample_fmt;
+
+    int ret;
+    /* create resampler context */
+    swr_ctx = swr_alloc();
+    if (!swr_ctx) {
+        qDebug()  << "Could not allocate resampler context";
+        ret = AVERROR(ENOMEM);
+        return ret;
+    }
+
+    /* set options */
+    av_opt_set_int(swr_ctx, "in_channel_layout", src_ch_layout, 0);
+    av_opt_set_int(swr_ctx, "in_sample_rate", src_rate, 0);
+    av_opt_set_sample_fmt(swr_ctx, "in_sample_fmt", dec_ctx->sample_fmt, 0);
+
+    av_opt_set_int(swr_ctx, "out_channel_layout", dst_ch_layout, 0);
+    av_opt_set_int(swr_ctx, "out_sample_rate", dst_rate, 0);
+    av_opt_set_sample_fmt(swr_ctx, "out_sample_fmt", dst_sample_fmt, 0);
+
+    /* initialize the resampling context */
+    if ((ret = swr_init(swr_ctx)) < 0) {
+        qDebug()  << "Failed to initialize the resampling context";
+        return -1;
+    }
+
+    //配置输入的参数
+    /*
+    * src_nb_samples: 描述一整的采样个数 比如这里就是 1024
+    * src_linesize: 描述一行采样字节长度
+    *   当是planr 结构 LLLLLRRRRRR 的时候 比如 一帧1024个采样，32位表示。那就是 1024*4 = 4096
+    *   当是非palner 结构的时候 LRLRLR 比如一帧1024采样 32位表示 双通道   1024*4*2 = 8196 要乘以通道
+    * src_nb_channels : 可以根据布局获得音频的通道
+    * ret 返回输入数据的长度 比如这里 1024 * 4 * 2 = 8196 (32bit，双声道，1024个采样)
+    */
+    src_nb_channels = av_get_channel_layout_nb_channels(src_ch_layout);
+
+    ret = av_samples_alloc_array_and_samples(&src_data_, &src_linesize, src_nb_channels,
+                                             src_nb_samples, src_sample_fmt, 0);
+    if (ret < 0) {
+        qDebug()  << "Could not allocate source samples\n";
+        return -1;
+    }
+    src_nb_samples_ = src_nb_samples;
+
+    //配置输出的参数
+    int max_dst_nb_samples = dst_nb_samples_ =
+        av_rescale_rnd(src_nb_samples, dst_rate, src_rate, AV_ROUND_UP);
+
+    dst_nb_channels = av_get_channel_layout_nb_channels(dst_ch_layout);
+
+    ret = av_samples_alloc_array_and_samples(&dst_data_, &dst_linesize, dst_nb_channels,
+                                             dst_nb_samples_, dst_sample_fmt, 0);
+    if (ret < 0) {
+        qDebug()  << "Could not allocate destination samples";
+        return -1;
+    }
+
+    int data_size = av_get_bytes_per_sample(dst_sample_fmt_);
+    InitIODevice(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
 }
 
 int AudioRender::WriteInput(AVFrame* frame)
@@ -116,7 +188,6 @@ int AudioRender::WriteInput(AVFrame* frame)
 
 int AudioRender::SwrConvert()
 {
-    if(!controller)return -1;
     int ret = swr_convert(swr_ctx, dst_data_, dst_nb_samples_, (const uint8_t**)src_data_, src_nb_samples_);
     if (ret < 0) {
         fprintf(stderr, "Error while converting\n");
@@ -138,7 +209,7 @@ int AudioRender::SwrConvert()
     else {
         //非planr结构，dst_data_[0] 里面存在着全部数据
 
-        controller->WriteIODevice((const char*)(dst_data_[0]), dst_bufsize);
+        WriteIODevice((const char*)(dst_data_[0]), dst_bufsize);
     }
 
     return dst_bufsize;
@@ -158,7 +229,16 @@ void AudioRender::Close()
     av_freep(&dst_data_);
 
     swr_free(&swr_ctx);
-    if(!controller)return;
-    controller->FreeIODevice();
+
+    FreeIODevice();
+}
+
+bool AudioRender::initSuccessful()
+{
+    if(swr_ctx){
+        return true;
+    }
+    return false;
+
 }
 

@@ -1,5 +1,5 @@
-#ifndef AVCONTROLLER_H
-#define AVCONTROLLER_H
+#ifndef AVOUTPUT_H
+#define AVOUTPUT_H
 
 
 #include <QApplication>
@@ -12,26 +12,23 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-class AVController : public QWidget
+class AVOutput: public QObject
 {
     Q_OBJECT
 public:
-    explicit AVController(QWidget *parent = nullptr);
-    ~AVController();
-    void ImageUpdate(QImage imageUpdate);
+    explicit AVOutput(QObject *parent = nullptr);
+    ~AVOutput();
+
     void InitIODevice(int dst_nb_samples, int rate, int sample_size, int nch);
     void WriteIODevice(const char* data, qint64 len);
     void FreeIODevice();
-    void StartSysClockMs();
-
-    void clearStartTime();
-    int64_t now_ms();
-    int64_t GetSysClockMs();
-    int64_t audio_frame_dur = 0; //一帧音频需要经过的时间
-    int64_t video_frame_dur= 0; // 一帧视频需要经过的时间
+    // void StartSysClockMs();
+    // void clearStartTime();
+    // int64_t now_ms();
+    // int64_t GetSysClockMs();
+    // int64_t audio_frame_dur = 0; //一帧音频需要经过的时间
+    // int64_t video_frame_dur= 0; // 一帧视频需要经过的时间
 protected:
-    void paintEvent(QPaintEvent* event) override;
-    QImage __imageUpdate;
 private:
     QIODevice* outputDevice;
     QAudioOutput* audioOutput;
@@ -40,4 +37,4 @@ private:
 signals:
 };
 
-#endif // AVCONTROLLER_H
+#endif // AVOUTPUT_H

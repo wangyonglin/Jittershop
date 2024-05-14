@@ -16,18 +16,19 @@ extern "C" {
 #include <libswresample/swresample.h>
 }
 
-#include "AVController.h"
+#include "AVOutput.h"
 #include <QApplication>
 #include <QAudioOutput>
 #include <QIODevice>
 #include <QDebug>
 #include <QObject>
 #include <QByteArray>
-class AudioRender : public QObject
+
+class AudioRender : public AVOutput
 {
     Q_OBJECT
 public:
-    explicit AudioRender(QObject *parent = nullptr,AVController *controller= nullptr);
+    explicit AudioRender(QObject *parent = nullptr);
     ~AudioRender();
     int InitSwrResample(int64_t src_ch_layout,
                         int64_t dst_ch_layout,
@@ -40,8 +41,13 @@ public:
     int WriteInput(AVFrame *frame);
     int SwrConvert();
     void Close();
+    bool initSuccessful();
+
+    int InitSwrResample(AVCodecContext *dec_ctx,
+                        int64_t dst_ch_layout,
+                        int dst_rate,
+                        AVSampleFormat dst_sample_fmt);
 private:
-    AVController * controller=nullptr;
     struct SwrContext* swr_ctx;
     uint8_t** src_data_;
     uint8_t** dst_data_;

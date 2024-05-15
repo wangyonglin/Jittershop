@@ -2,7 +2,7 @@
 
 
 AudioRender::AudioRender(QObject *parent)
-    : AVOutput{parent}
+    : AudioOutput{parent}
 
 {
 
@@ -80,7 +80,7 @@ int  AudioRender::InitSwrResample(int64_t src_ch_layout, int64_t dst_ch_layout,
     }
 
     int data_size = av_get_bytes_per_sample(dst_sample_fmt_);
-    InitIODevice(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
+    InitFormat(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
 }
 
 
@@ -154,7 +154,7 @@ int  AudioRender::InitSwrResample(AVCodecContext * dec_ctx,
     }
 
     int data_size = av_get_bytes_per_sample(dst_sample_fmt_);
-    InitIODevice(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
+    InitFormat(dst_nb_samples_, dst_rate, data_size*8, dst_nb_channels);
 }
 
 int AudioRender::WriteInput(AVFrame* frame)
@@ -209,7 +209,7 @@ int AudioRender::SwrConvert()
     else {
         //非planr结构，dst_data_[0] 里面存在着全部数据
 
-        WriteIODevice((const char*)(dst_data_[0]), dst_bufsize);
+        WriteOutput((const char*)(dst_data_[0]), dst_bufsize);
     }
 
     return dst_bufsize;
@@ -230,7 +230,7 @@ void AudioRender::Close()
 
     swr_free(&swr_ctx);
 
-    FreeIODevice();
+    FreeFormat();
 }
 
 bool AudioRender::initSuccessful()

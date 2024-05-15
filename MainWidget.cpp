@@ -34,6 +34,7 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
         player->resume();
     }else if(event->key() == Qt::Key_F8){
          player->play("/home/wangyonglin/视频/oceans.mp4");
+        qDebug() << "play";
     }
 }
 

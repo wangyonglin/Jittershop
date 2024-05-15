@@ -1,19 +1,19 @@
-#include "AVOutput.h"
+#include "AudioOutput.h"
 
-AVOutput::AVOutput(QObject *parent)
+AudioOutput::AudioOutput(QObject *parent)
     : QObject{parent}
 {
 
 }
 
-AVOutput::~AVOutput()
+AudioOutput::~AudioOutput()
 {
 
 }
 
 
 
-void AVOutput::InitIODevice(int dst_nb_samples, int rate, int sample_size, int nch)
+void AudioOutput::InitFormat(int dst_nb_samples, int rate, int sample_size, int nch)
 {
 
     QAudioFormat format;
@@ -35,42 +35,16 @@ void AVOutput::InitIODevice(int dst_nb_samples, int rate, int sample_size, int n
     outputDevice = audioOutput->start();
 }
 
-void AVOutput::WriteIODevice(const char *data, qint64 len)
+void AudioOutput::WriteOutput(const char *data, qint64 len)
 {
     outputDevice->write(data, len);
 
 }
 
-void AVOutput::FreeIODevice()
+void AudioOutput::FreeFormat()
 {
      audioOutput->stop();
 }
 
-// void AVOutput::StartSysClockMs()
-// {
-//     if (this->player_start_time_ms == 0)
-//     {
-//         this->player_start_time_ms = now_ms();
-//     }
-// }
 
-// void AVOutput::clearStartTime()
-// {
-//     player_start_time_ms=0;
-// }
-
-// int64_t AVOutput::now_ms()
-// {
-//     auto now = std::chrono::system_clock::now();
-//     return std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-// }
-
-// int64_t AVOutput::GetSysClockMs()
-// {
-//     if (this->player_start_time_ms != 0)
-//     {
-//         return  now_ms() - this->player_start_time_ms;
-//     }
-//     return 0;
-// }
 

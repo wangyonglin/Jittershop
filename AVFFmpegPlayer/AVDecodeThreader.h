@@ -27,7 +27,9 @@ private:
     AVCodecContext *OpenDecoder(AVCodecParameters *codecpar);
     void CloseDecoder(AVCodecContext *codec_ctx);
     void BuildDecoder(AVCodecContext *codec_ctx, AVPacketQueue *pkt_queue, AVFrameQueue *frame_queue);
+
 signals:
+    void finished();
 };
 
 #endif // AVDECODETHREADER_H

@@ -1,21 +1,22 @@
-#ifndef VIDEODECODER_H
-#define VIDEODECODER_H
+#ifndef VIDEODECODETHREADER_H
+#define VIDEODECODETHREADER_H
 #include "QFFmpeg.h"
 #include "AVThreader.h"
 #include "JitterBuffer.h"
-#include "AVDemuxer.h"
-#include "AVOutput.h"
+#include "AVDemuxThreader.h"
+#include "AudioOutput.h"
 #include "VideoRender.h"
 #include <QObject>
 #include "AVFrameQueue.h"
 #include "AVDecodeThreader.h"
 
-class VideoDecoder : public AVThreader
+class VideoDecodeThreader : public AVThreader
 {
     Q_OBJECT
 public:
-    explicit VideoDecoder(QObject *parent = nullptr);
-    void loadParameters(AVDemuxer *demuxer,
+    explicit VideoDecodeThreader(QObject *parent = nullptr);
+    ~VideoDecodeThreader();
+    void loadParameters(AVDemuxThreader *demuxer,
                         VideoRender *video_Render);
     virtual void start(Priority pri = InheritPriority);
     virtual void stop();
@@ -25,7 +26,7 @@ private:
     virtual void loopRunnable();
     bool frameFinished= false;
     int video_stream_time=0;
-    AVDemuxer *demuxer=nullptr;
+    AVDemuxThreader *demuxer=nullptr;
     VideoRender *render=nullptr;
 
     AVDecodeThreader decode_thd;
@@ -36,4 +37,4 @@ signals:
     void updateRender(QImage image);
 };
 
-#endif // VIDEODECODER_H
+#endif // VIDEODECODETHREADER_H

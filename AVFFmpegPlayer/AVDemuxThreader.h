@@ -1,6 +1,6 @@
-#ifndef AVDEMUXER_H
-#define AVDEMUXER_H
-#include "AVOutput.h"
+#ifndef AVDEMUXTHREADER_H
+#define AVDEMUXTHREADER_H
+#include "AudioOutput.h"
 #include "QFFmpeg.h"
 #include "AVThreader.h"
 #include "JitterBuffer.h"
@@ -13,18 +13,19 @@
 #include "AVPacketQueue.h"
 
 
-class AVDemuxer : public AVThreader
+class AVDemuxThreader : public AVThreader
 {
     Q_OBJECT
 public:
-    explicit AVDemuxer(QObject *parent = nullptr);
-    ~AVDemuxer();
+    explicit AVDemuxThreader(QObject *parent = nullptr);
+    ~AVDemuxThreader();
     void loadParameters(AVPacketQueue * audio_pkt_queue,AVPacketQueue * video_pkt_queue);
-    bool buildDemuxer(QString url);
+    bool initDemuxer(QString url);
+
     virtual void start(Priority pri = InheritPriority);
     virtual void stop();
-    virtual void clear();
-
+    virtual void pause();
+    virtual void resume();
 
     int64_t getCurrentTimer();
 private:
@@ -36,9 +37,9 @@ private:
     int64_t video_frame_dur= 0; // 一帧视频需要经过的时间
     int64_t player_start_time_ms = 0;
     bool frameFinished =false;
-    QString url;
+    QString strurl;
     AVFormatContext * ifmt_ctx=nullptr;
-    char * strurl=nullptr;
+   // char * strurl=nullptr;
     int64_t expand_size=0;
 
 public:
@@ -60,4 +61,4 @@ public slots:
 
 };
 
-#endif // AVDEMUXER_H
+#endif // AVDEMUXTHREADER_H

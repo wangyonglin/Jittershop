@@ -1,11 +1,11 @@
 #ifndef AVFFMPEGPLAYER_H
 #define AVFFMPEGPLAYER_H
 
-#include "AVDemuxer.h"
-#include "AudioDecoder.h"
-#include "AVOutput.h"
+#include "AVDemuxThreader.h"
+#include "AudioDecodeThreader.h"
+#include "AudioOutput.h"
 #include "AudioRender.h"
-#include "VideoDecoder.h"
+#include "VideoDecodeThreader.h"
 #include "VideoRender.h"
 
 #include <QWidget>
@@ -24,11 +24,11 @@ public:
     void resume();
     void stop();
 private:
-    AVDemuxer * demuxer=nullptr;
-    AudioDecoder * audioDecoder=nullptr;
+    AVDemuxThreader * av_demuxer=nullptr;
+    AudioDecodeThreader * audio_decoder=nullptr;
     AudioRender * audio_render=nullptr;
-    VideoDecoder *videoDecoder=nullptr;
-    VideoRender *videoRender=nullptr;
+    VideoDecodeThreader *video_decoder=nullptr;
+    VideoRender *video_render=nullptr;
 
 signals:
     void finished();

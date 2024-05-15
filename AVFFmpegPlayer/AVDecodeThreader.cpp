@@ -2,7 +2,9 @@
 
 AVDecodeThreader::AVDecodeThreader(QObject *parent)
     : AVThreader{parent}
-{}
+{
+
+}
 
 void AVDecodeThreader::loadParameters(AVCodecParameters *codecpar,AVPacketQueue * pkt_queue,AVFrameQueue *frame_queue)
 {
@@ -49,7 +51,6 @@ void AVDecodeThreader::loopRunnable()
         if(frame_queue->size()<=10){
           BuildDecoder(codec_ctx,pkt_queue,frame_queue);
         }
-
     }
 
 }

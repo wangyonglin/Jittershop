@@ -8,7 +8,6 @@ AVThreader::AVThreader(QObject *parent)
 AVThreader::~AVThreader()
 {
 
-    //stop();
 }
 
 AVThreader::State AVThreader::state() const

@@ -16,7 +16,7 @@ extern "C" {
 #include <libswresample/swresample.h>
 }
 
-#include "AVOutput.h"
+#include "AudioOutput.h"
 #include <QApplication>
 #include <QAudioOutput>
 #include <QIODevice>
@@ -24,7 +24,7 @@ extern "C" {
 #include <QObject>
 #include <QByteArray>
 
-class AudioRender : public AVOutput
+class AudioRender : public AudioOutput
 {
     Q_OBJECT
 public:

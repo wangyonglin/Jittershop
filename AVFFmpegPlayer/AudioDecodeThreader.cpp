@@ -1,9 +1,9 @@
-#include "AudioDecoder.h"
+#include "AudioDecodeThreader.h"
 #include <memory>
 #include <iostream>
 
 
-AudioDecoder::AudioDecoder(QObject *parent)
+AudioDecodeThreader::AudioDecodeThreader(QObject *parent)
     : AVThreader(parent),
     frame_queue(new AVFrameQueue(this))
 {
@@ -11,8 +11,13 @@ AudioDecoder::AudioDecoder(QObject *parent)
 
 }
 
+AudioDecodeThreader::~AudioDecodeThreader()
+{
 
-void AudioDecoder::loopRunnable()
+}
+
+
+void AudioDecodeThreader::loopRunnable()
 {
     if(!demuxer)return;
     if(state()==Running && !frameFinished){
@@ -33,30 +38,9 @@ void AudioDecoder::loopRunnable()
     }
 }
 
-int AudioDecoder::ResampleAudio(AVFrame *frame)
+int AudioDecodeThreader::ResampleAudio(AVFrame *frame)
 {
-
-    // 把AVFrame里面的数据拷贝到，预备的src_data里面
     int res=-1;
-    // if (!audio_render->initSuccessful())
-    // {
-    //     //创建重采样信息
-    //     int src_ch_layout = decode_thd.getCodecContext()->channel_layout;
-    //     int src_rate = decode_thd.getCodecContext()->sample_rate;
-    //     enum AVSampleFormat src_sample_fmt = decode_thd.getCodecContext()->sample_fmt;
-
-
-    //     //aac编码一般是这个,实际这个值只能从解码后的数据里面获取，所有这个初始化过程可以放在解码出第一帧的时候
-    //     //  int src_nb_samples = frame->nb_samples;
-
-    //     audio_render->InitSwrResample(src_ch_layout, AV_CH_LAYOUT_STEREO,
-    //                                   src_rate, 44100,
-    //                                   src_sample_fmt, AV_SAMPLE_FMT_S16,
-    //                                   decode_thd.getCodecContext()->frame_size);
-
-
-    // }
-
     audio_render->WriteInput(frame);
     res=   audio_render->SwrConvert();
 
@@ -68,7 +52,7 @@ int AudioDecoder::ResampleAudio(AVFrame *frame)
 
 
 
-void AudioDecoder::loadParameters(AVDemuxer *demuxer,AudioRender *render)
+void AudioDecodeThreader::loadParameters(AVDemuxThreader *demuxer,AudioRender *render)
 {
 
     this->demuxer=demuxer;
@@ -76,35 +60,37 @@ void AudioDecoder::loadParameters(AVDemuxer *demuxer,AudioRender *render)
 
 }
 
-void AudioDecoder::start(Priority pri)
+void AudioDecodeThreader::start(Priority pri)
 {
     frameFinished=false;
     decode_thd.loadParameters(demuxer->audio_codecpar,demuxer->audio_pkt_queue,frame_queue);
-    decode_thd.clear();
     decode_thd.start();
     audio_render->InitSwrResample(decode_thd.getCodecContext(),AV_CH_LAYOUT_STEREO,44100,AV_SAMPLE_FMT_S16);
     AVThreader::start(pri);
 }
 
-void AudioDecoder::stop()
+void AudioDecodeThreader::stop()
 {
-    qDebug() << "AudioDecoder is about to be deleted";
+    qDebug() << "AudioDecodeThreader is about to be deleted";
     frameFinished=true;
-    delete audio_render;
     decode_thd.stop();
-    decode_thd.clear();
     AVThreader::stop();
+    decode_thd.clear();
     audio_render->Close();
+    delete audio_render;
 
 }
 
-void AudioDecoder::pause()
+void AudioDecodeThreader::pause()
 {
+    decode_thd.pause();
     AVThreader::pause();
+
 }
 
-void AudioDecoder::resume()
+void AudioDecodeThreader::resume()
 {
+    decode_thd.resume();
     AVThreader::resume();
 }
 

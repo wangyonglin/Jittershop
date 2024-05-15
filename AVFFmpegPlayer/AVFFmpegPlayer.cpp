@@ -3,18 +3,18 @@
 
 AVFFmpegPlayer::AVFFmpegPlayer(QWidget *parent)
     :QWidget{parent},
-    demuxer(new AVDemuxer(this)),
-    audioDecoder(new AudioDecoder(this)),
+    av_demuxer(new AVDemuxThreader(this)),
+    audio_decoder(new AudioDecodeThreader(this)),
+    video_decoder(new VideoDecodeThreader(this)),
     audio_render(new AudioRender(this)),
-    videoDecoder(new VideoDecoder(this)),
-    videoRender(new VideoRender(this))
+    video_render(new VideoRender(this))
 
 {
     resize(800,600);
 
-    audioDecoder->loadParameters(demuxer,audio_render);
-    videoDecoder->loadParameters(demuxer,videoRender);
-    videoRender->resize(size());
+    audio_decoder->loadParameters(av_demuxer,audio_render);
+    video_decoder->loadParameters(av_demuxer,video_render);
+    video_render->resize(size());
 
 }
 
@@ -26,38 +26,39 @@ AVFFmpegPlayer::~AVFFmpegPlayer()
 void AVFFmpegPlayer::play(QString url)
 {
     qDebug() << "AVFFmpegPlayer::play(QString url)";
-    demuxer->buildDemuxer(url);
-    demuxer->start();
-    audioDecoder->start();
-    videoDecoder->start();
+    av_demuxer->initDemuxer(url);
+    av_demuxer->start();
+    audio_decoder->start();
+    video_decoder->start();
 
 }
 
 void AVFFmpegPlayer::start()
 {
-    demuxer->start();
-    audioDecoder->start();
-    videoDecoder->start();
+    av_demuxer->start();
+    audio_decoder->start();
+    video_decoder->start();
 }
 
 void AVFFmpegPlayer::pause()
 {
-    audioDecoder->pause();
-    videoDecoder->pause();
+    audio_decoder->pause();
+    video_decoder->pause();
 }
 void AVFFmpegPlayer::resume()
 {
-    audioDecoder->resume();
-    videoDecoder->resume();
+    audio_decoder->resume();
+    video_decoder->resume();
 }
 
 
 void AVFFmpegPlayer::stop()
 {
     qDebug() << "AVFFmpegPlayer::stop()";
-    demuxer->stop();
-    audioDecoder->stop();
-    videoDecoder->stop();
+
+    audio_decoder->stop();
+    video_decoder->stop();
+     av_demuxer->stop();
 
 }
 

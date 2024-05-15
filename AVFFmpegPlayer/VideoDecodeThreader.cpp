@@ -1,49 +1,58 @@
-#include "VideoDecoder.h"
+#include "VideoDecodeThreader.h"
 
-VideoDecoder::VideoDecoder(QObject *parent)
+VideoDecodeThreader::VideoDecodeThreader(QObject *parent)
     : AVThreader{parent},
     frame_queue(new AVFrameQueue(this))
 {
 
 }
 
-void VideoDecoder::loadParameters(
-                                  AVDemuxer *demuxer,
-                                  VideoRender *video_Render)
+VideoDecodeThreader::~VideoDecodeThreader()
+{
+
+
+}
+
+void VideoDecodeThreader::loadParameters(
+    AVDemuxThreader *demuxer,
+    VideoRender *video_Render)
 {
     this->demuxer=demuxer;
     this->render=video_Render;
 
 }
-void VideoDecoder::start(Priority pri)
+void VideoDecodeThreader::start(Priority pri)
 {
     frameFinished=false;
     decode_thd.loadParameters(demuxer->video_codecpar,demuxer->video_pkt_queue,frame_queue);
-    decode_thd.clear();
     decode_thd.start();
     AVThreader::start(pri);
 }
 
-void VideoDecoder::stop()
+void VideoDecodeThreader::stop()
 {
-    qDebug() << "VideoDecoder is about to be deleted";
+    qDebug() << "VideoDecodeThreader is about to be deleted";
     frameFinished=true;
+    AVThreader::stop();
     decode_thd.stop();
     decode_thd.clear();
-    AVThreader::stop();
+
 }
 
-void VideoDecoder::pause()
+void VideoDecodeThreader::pause()
 {
     AVThreader::pause();
+    decode_thd.pause();
 }
 
-void VideoDecoder::resume()
+void VideoDecodeThreader::resume()
 {
+    decode_thd.resume();
     AVThreader::resume();
+
 }
 
-void VideoDecoder::loopRunnable()
+void VideoDecodeThreader::loopRunnable()
 {
     if(state()==Running && !frameFinished){
         if (video_stream_time > demuxer->getCurrentTimer())

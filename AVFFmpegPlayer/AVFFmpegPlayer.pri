@@ -4,7 +4,6 @@ HEADERS += \
     $$PWD/AVFFmpegPlayer.h \
     $$PWD/AVFrameQueue.h \
     $$PWD/AVPacketQueue.h \
-    $$PWD/AVResampler.h \
     $$PWD/AVThreader.h \
     $$PWD/AudioDecodeThreader.h \
     $$PWD/AudioOutput.h \
@@ -20,7 +19,6 @@ SOURCES += \
     $$PWD/AVFFmpegPlayer.cpp \
     $$PWD/AVFrameQueue.cpp \
     $$PWD/AVPacketQueue.cpp \
-    $$PWD/AVResampler.cpp \
     $$PWD/AVThreader.cpp \
     $$PWD/AudioDecodeThreader.cpp \
     $$PWD/AudioOutput.cpp \

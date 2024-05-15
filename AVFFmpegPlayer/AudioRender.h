@@ -40,7 +40,7 @@ public:
 
     int WriteInput(AVFrame *frame);
     int SwrConvert();
-    void Close();
+    void FreeSwrResample();
     bool initSuccessful();
 
     int InitSwrResample(AVCodecContext *dec_ctx,

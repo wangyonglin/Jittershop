@@ -215,7 +215,7 @@ int AudioRender::SwrConvert()
     return dst_bufsize;
 }
 
-void AudioRender::Close()
+void AudioRender::FreeSwrResample()
 {
 
     if (src_data_)

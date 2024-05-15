@@ -76,7 +76,7 @@ void AudioDecodeThreader::stop()
     decode_thd.stop();
     AVThreader::stop();
     decode_thd.clear();
-    audio_render->Close();
+    audio_render->FreeSwrResample();
     delete audio_render;
 
 }

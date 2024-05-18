@@ -3,7 +3,6 @@
 
 #include "AVDemuxThreader.h"
 #include "AudioDecodeThreader.h"
-#include "AudioOutput.h"
 #include "AudioRender.h"
 #include "VideoDecodeThreader.h"
 #include "VideoRender.h"
@@ -26,7 +25,6 @@ public:
 private:
     AVDemuxThreader * av_demuxer=nullptr;
     AudioDecodeThreader * audio_decoder=nullptr;
-    AudioRender * audio_render=nullptr;
     VideoDecodeThreader *video_decoder=nullptr;
     VideoRender *video_render=nullptr;
 

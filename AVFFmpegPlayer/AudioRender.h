@@ -1,5 +1,5 @@
-#ifndef AUDIOOUTPUT_H
-#define AUDIOOUTPUT_H
+#ifndef AUDIORENDER_H
+#define AUDIORENDER_H
 
 
 #include <QApplication>
@@ -12,16 +12,17 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-class AudioOutput: public QObject
+class AudioRender: public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioOutput(QObject *parent = nullptr);
-    ~AudioOutput();
+    explicit AudioRender(QObject *parent = nullptr);
+    ~AudioRender();
 
     void InitFormat(int dst_nb_samples, int rate, int sample_size, int nch);
     void WriteOutput(const char* data, qint64 len);
     void FreeFormat();
+    void WriteOutput(QByteArray bytes);
 protected:
 private:
     QIODevice* outputDevice;
@@ -31,4 +32,4 @@ private:
 signals:
 };
 
-#endif // AUDIOOUTPUT_H
+#endif // AUDIORENDER_H

@@ -6,13 +6,12 @@ AVFFmpegPlayer::AVFFmpegPlayer(QWidget *parent)
     av_demuxer(new AVDemuxThreader(this)),
     audio_decoder(new AudioDecodeThreader(this)),
     video_decoder(new VideoDecodeThreader(this)),
-    audio_render(new AudioRender(this)),
     video_render(new VideoRender(this))
 
 {
     resize(800,600);
 
-    audio_decoder->loadParameters(av_demuxer,audio_render);
+    audio_decoder->loadParameters(av_demuxer);
     video_decoder->loadParameters(av_demuxer,video_render);
     video_render->resize(size());
 

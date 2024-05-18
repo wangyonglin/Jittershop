@@ -1,19 +1,19 @@
-#include "AudioOutput.h"
+#include "AudioRender.h"
 
-AudioOutput::AudioOutput(QObject *parent)
+AudioRender::AudioRender(QObject *parent)
     : QObject{parent}
 {
 
 }
 
-AudioOutput::~AudioOutput()
+AudioRender::~AudioRender()
 {
 
 }
 
 
 
-void AudioOutput::InitFormat(int dst_nb_samples, int rate, int sample_size, int nch)
+void AudioRender::InitFormat(int dst_nb_samples, int rate, int sample_size, int nch)
 {
 
     QAudioFormat format;
@@ -35,13 +35,16 @@ void AudioOutput::InitFormat(int dst_nb_samples, int rate, int sample_size, int 
     outputDevice = audioOutput->start();
 }
 
-void AudioOutput::WriteOutput(const char *data, qint64 len)
+void AudioRender::WriteOutput(const char *data, qint64 len)
 {
     outputDevice->write(data, len);
 
 }
-
-void AudioOutput::FreeFormat()
+void AudioRender::WriteOutput(QByteArray bytes){
+    if(!bytes.isEmpty())
+        outputDevice->write(bytes.data(), bytes.length());
+}
+void AudioRender::FreeFormat()
 {
      audioOutput->stop();
 }

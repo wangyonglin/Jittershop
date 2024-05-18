@@ -7,7 +7,7 @@ MainWidget::MainWidget(QWidget *parent)
 {
     player=new AVFFmpegPlayer(this);
 
-    player->play("/home/wangyonglin/视频/252977_video.mp4");
+    player->play("/home/wangyonglin/视频/202223014-1-16.mp4");
 }
 
 MainWidget::~MainWidget() {

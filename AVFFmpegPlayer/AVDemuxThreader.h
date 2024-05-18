@@ -1,6 +1,6 @@
 #ifndef AVDEMUXTHREADER_H
 #define AVDEMUXTHREADER_H
-#include "AudioOutput.h"
+#include "AudioRender.h"
 #include "QFFmpeg.h"
 #include "AVThreader.h"
 #include "JitterBuffer.h"

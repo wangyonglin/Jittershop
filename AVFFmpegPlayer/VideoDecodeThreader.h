@@ -4,7 +4,7 @@
 #include "AVThreader.h"
 #include "JitterBuffer.h"
 #include "AVDemuxThreader.h"
-#include "AudioOutput.h"
+#include "AudioRender.h"
 #include "VideoRender.h"
 #include <QObject>
 #include "AVFrameQueue.h"

@@ -4,12 +4,11 @@
 #include "QFFmpeg.h"
 #include "AVThreader.h"
 #include "AVDemuxThreader.h"
-#include "AudioOutput.h"
 #include "AudioRender.h"
 #include "AVPacketQueue.h"
 #include "AVFrameQueue.h"
 #include "AVDecodeThreader.h"
-
+#include "AVResample.h"
 
 class AudioDecodeThreader : public AVThreader
 {
@@ -19,7 +18,7 @@ public:
     ~AudioDecodeThreader();
     bool initDemuxer(AVCodecParameters *codecpar);
 
-    void loadParameters(AVDemuxThreader *demuxer,AudioRender *render);
+    void loadParameters(AVDemuxThreader *demuxer);
 
     virtual void start(Priority pri = InheritPriority);
     virtual void stop();
@@ -34,12 +33,9 @@ private:
     int audio_stream_time =0;
     int curr_playing_ms = 0;
     AVDemuxThreader * demuxer=nullptr;
-
-    int ResampleAudio(AVFrame* frame);
-    AudioRender * audio_render=nullptr;
-
+    AVResample av_resample;
+    AudioRender audio_render;
 public slots:
 signals:
-    void updateRender(QByteArray bytes);
 };
 #endif // AUDIODECODETHREADER_H

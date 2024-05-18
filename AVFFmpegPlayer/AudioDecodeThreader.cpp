@@ -30,7 +30,8 @@ void AudioDecodeThreader::loopRunnable()
             if(frame){
                 frame->pts= (frame->pts!=AV_NOPTS_VALUE)?frame->pts:0;
                 audio_stream_time = (frame->pts - demuxer->audio_pts_begin) * av_q2d(demuxer->audio_pts_base) * 1000;
-                ResampleAudio(frame);
+                QByteArray bytes= av_resample.BuiledConvert(frame);
+                audio_render.WriteOutput(bytes);
                 av_frame_free(&frame);
             }
 
@@ -38,25 +39,11 @@ void AudioDecodeThreader::loopRunnable()
     }
 }
 
-int AudioDecodeThreader::ResampleAudio(AVFrame *frame)
-{
-    int res=-1;
-    audio_render->WriteInput(frame);
-    res=   audio_render->SwrConvert();
 
-    return res;
-}
-
-
-
-
-
-
-void AudioDecodeThreader::loadParameters(AVDemuxThreader *demuxer,AudioRender *render)
+void AudioDecodeThreader::loadParameters(AVDemuxThreader *demuxer)
 {
 
     this->demuxer=demuxer;
-    this->audio_render=render;
 
 }
 
@@ -65,7 +52,9 @@ void AudioDecodeThreader::start(Priority pri)
     frameFinished=false;
     decode_thd.loadParameters(demuxer->audio_codecpar,demuxer->audio_pkt_queue,frame_queue);
     decode_thd.start();
-    audio_render->InitSwrResample(decode_thd.getCodecContext(),AV_CH_LAYOUT_STEREO,44100,AV_SAMPLE_FMT_S16);
+    av_resample.InitAVResample(decode_thd.getCodecContext(),AV_CH_LAYOUT_STEREO,44100,AV_SAMPLE_FMT_S16);
+    int data_size = av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
+    audio_render.InitFormat(0,44100,data_size*8,2);
     AVThreader::start(pri);
 }
 
@@ -76,9 +65,8 @@ void AudioDecodeThreader::stop()
     decode_thd.stop();
     AVThreader::stop();
     decode_thd.clear();
-    audio_render->FreeSwrResample();
-    delete audio_render;
-
+    av_resample.FreeAVResample();
+    audio_render.FreeFormat();
 }
 
 void AudioDecodeThreader::pause()

@@ -1,5 +1,6 @@
 #ifndef QFFMPEG_H
 #define QFFMPEG_H
+
 extern "C" {
 #include <libavutil/pixfmt.h>
 #include "libavcodec/avcodec.h"

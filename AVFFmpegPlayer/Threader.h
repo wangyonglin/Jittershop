@@ -1,5 +1,5 @@
-#ifndef AVTHREADER_H
-#define AVTHREADER_H
+#ifndef THREADER_H
+#define THREADER_H
 
 #include <QThread>
 #include <QObject>
@@ -7,12 +7,12 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-class AVThreader: public QThread
+class Threader: public QThread
 {
     Q_OBJECT
 public:
-    explicit AVThreader(QObject *parent = nullptr);
-    ~AVThreader() override;
+    explicit Threader(QObject *parent = nullptr);
+    ~Threader() override;
 
     enum State
     {
@@ -40,4 +40,4 @@ public:
     QWaitCondition condition;
 };
 
-#endif // AVTHREADER_H
+#endif // THREADER_H

@@ -7,7 +7,7 @@ MainWidget::MainWidget(QWidget *parent)
 {
     player=new AVFFmpegPlayer(this);
 
-    player->play("/home/wangyonglin/视频/202223014-1-16.mp4");
+    player->play("/home/wangyonglin/视频/oceans.mp4");
 }
 
 MainWidget::~MainWidget() {
@@ -21,7 +21,7 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
         // 弹出确认对话框
         if (QMessageBox::question(this, "退出", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             // 如果用户选择"是"，则继续关闭窗口
-            player->stop();
+            player->free();
             QApplication::exit(); // 退出程序
             event->accept();
         } else {
@@ -29,12 +29,12 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
             event->ignore();
         }
     }else if(event->key() == Qt::Key_F11){
-        player->pause();
+        player->play("/home/wangyonglin/视频/252977_video.mp4");
     }else if(event->key() == Qt::Key_F12){
-        player->resume();
+        player->play("/home/wangyonglin/视频/401141_video.mp4");
     }else if(event->key() == Qt::Key_F8){
-         player->play("/home/wangyonglin/视频/oceans.mp4");
-        qDebug() << "play";
+        player->play("/home/wangyonglin/视频/202223014-1-16.mp4");
+
     }
 }
 
@@ -43,7 +43,7 @@ void MainWidget::closeEvent(QCloseEvent *event)
     // 弹出确认对话框
     if (QMessageBox::question(this, "退出", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         // 如果用户选择"是"，则继续关闭窗口
-        player->stop();
+        player->free();
         QApplication::exit(); // 退出程序
         event->accept();
     } else {

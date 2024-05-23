@@ -1,30 +1,30 @@
 HEADERS += \
-    $$PWD/AVDecodeThreader.h \
-    $$PWD/AVDemuxThreader.h \
+    $$PWD/AVController.h \
+    $$PWD/AVDemuxer.h \
     $$PWD/AVFFmpegPlayer.h \
     $$PWD/AVFrameQueue.h \
     $$PWD/AVPacketQueue.h \
     $$PWD/AVResample.h \
-    $$PWD/AVThreader.h \
-    $$PWD/AudioDecodeThreader.h \
+    $$PWD/AVSynchronize.h \
+    $$PWD/AudioDecoder.h \
     $$PWD/AudioRender.h \
-    $$PWD/JitterBuffer.h \
     $$PWD/QFFmpeg.h \
-    $$PWD/VideoDecodeThreader.h \
+    $$PWD/Threader.h \
+    $$PWD/VideoDecoder.h \
     $$PWD/VideoRender.h
 
 SOURCES += \
-    $$PWD/AVDecodeThreader.cpp \
-    $$PWD/AVDemuxThreader.cpp \
+    $$PWD/AVController.cpp \
+    $$PWD/AVDemuxer.cpp \
     $$PWD/AVFFmpegPlayer.cpp \
     $$PWD/AVFrameQueue.cpp \
     $$PWD/AVPacketQueue.cpp \
     $$PWD/AVResample.cpp \
-    $$PWD/AVThreader.cpp \
-    $$PWD/AudioDecodeThreader.cpp \
+    $$PWD/AVSynchronize.cpp \
+    $$PWD/AudioDecoder.cpp \
     $$PWD/AudioRender.cpp \
-    $$PWD/JitterBuffer.cpp \
     $$PWD/QFFmpeg.cpp \
-    $$PWD/VideoDecodeThreader.cpp \
+    $$PWD/Threader.cpp \
+    $$PWD/VideoDecoder.cpp \
     $$PWD/VideoRender.cpp
 

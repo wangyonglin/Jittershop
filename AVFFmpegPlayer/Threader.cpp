@@ -1,16 +1,16 @@
-#include "AVThreader.h"
+#include "Threader.h"
 
-AVThreader::AVThreader(QObject *parent)
+Threader::Threader(QObject *parent)
     : QThread(parent),
     pauseFlag(false),
     stopFlag(false)
 {}
-AVThreader::~AVThreader()
+Threader::~Threader()
 {
 
 }
 
-AVThreader::State AVThreader::state() const
+Threader::State Threader::state() const
 {
     State s = Stoped;
     if (!QThread::isRunning())
@@ -28,12 +28,12 @@ AVThreader::State AVThreader::state() const
     return s;
 }
 
-void AVThreader::start(Priority pri)
+void Threader::start(Priority pri)
 {
     QThread::start(pri);
 }
 
-void AVThreader::stop()
+void Threader::stop()
 {
     if (QThread::isRunning())
     {
@@ -44,7 +44,7 @@ void AVThreader::stop()
     }
 }
 
-void AVThreader::pause()
+void Threader::pause()
 {
     if (QThread::isRunning())
     {
@@ -52,7 +52,7 @@ void AVThreader::pause()
     }
 }
 
-void AVThreader::resume()
+void Threader::resume()
 {
     if (QThread::isRunning())
     {
@@ -61,11 +61,12 @@ void AVThreader::resume()
     }
 }
 
-void AVThreader::run()
+void Threader::run()
 {
     qDebug() << "enter thread : " << QThread::currentThreadId();
     while (!stopFlag)
     {
+        //QThread::usleep(100);
         loopRunnable(); // do something...
 
         if (pauseFlag)

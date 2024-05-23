@@ -7,9 +7,9 @@ AVResample::AVResample(QObject *parent)
 }
 
 int  AVResample::InitAVResample(AVCodecContext * dec_ctx,
-                                 int64_t dst_ch_layout,
-                                 int dst_rate,
-                                 enum AVSampleFormat dst_sample_fmt)
+                               int64_t dst_ch_layout,
+                               int dst_rate,
+                               enum AVSampleFormat dst_sample_fmt)
 {
 
     int64_t src_ch_layout=dec_ctx->channel_layout;
@@ -120,7 +120,7 @@ QByteArray AVResample::BuiledConvert(AVFrame* frame)
     int  dst_bufsize = av_samples_get_buffer_size(&dst_linesize, dst_nb_channels,
                                                  ret, dst_sample_fmt_, 1);
 
-     planar = av_sample_fmt_is_planar(dst_sample_fmt_);
+    planar = av_sample_fmt_is_planar(dst_sample_fmt_);
     if (planar)
     {
 
@@ -130,11 +130,11 @@ QByteArray AVResample::BuiledConvert(AVFrame* frame)
     else {
         //非planr结构，dst_data_[0] 里面存在着全部数据
 
-      //  WriteOutput((const char*)(dst_data_[0]), dst_bufsize);
-          QByteArray outputBuffer(dst_bufsize, 0);
-          uint8_t *buffer = reinterpret_cast<uint8_t*>(outputBuffer.data());
-          memcpy(buffer, dst_data_[0],dst_bufsize);
-          return outputBuffer;
+        //  WriteOutput((const char*)(dst_data_[0]), dst_bufsize);
+        QByteArray outputBuffer(dst_bufsize, 0);
+        uint8_t *buffer = reinterpret_cast<uint8_t*>(outputBuffer.data());
+        memcpy(buffer, dst_data_[0],dst_bufsize);
+        return outputBuffer;
 
     }
 

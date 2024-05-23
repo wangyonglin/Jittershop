@@ -1,41 +1,33 @@
-#ifndef AUDIODECODETHREADER_H
-#define AUDIODECODETHREADER_H
+#ifndef AUDIODECODER_H
+#define AUDIODECODER_H
 #include <QPointer>
 #include "QFFmpeg.h"
-#include "AVThreader.h"
-#include "AVDemuxThreader.h"
+#include "Threader.h"
 #include "AudioRender.h"
 #include "AVPacketQueue.h"
 #include "AVFrameQueue.h"
-#include "AVDecodeThreader.h"
 #include "AVResample.h"
-
-class AudioDecodeThreader : public AVThreader
+#include "AVController.h"
+class AudioDecoder : public Threader
 {
     Q_OBJECT
 public:
-    explicit AudioDecodeThreader(QObject *parent = nullptr);
-    ~AudioDecodeThreader();
-    bool initDemuxer(AVCodecParameters *codecpar);
+    explicit AudioDecoder(QObject *parent = nullptr);
+    ~AudioDecoder();
 
-    void loadParameters(AVDemuxThreader *demuxer);
-
+   bool frameFinished= true;
+private:
+    virtual void loopRunnable();
+    AVResample av_resample;
+    AudioRender audio_render;
+    AVController * controller;
+    void BuildDecoder(AVCodecContext *codec_ctx, AVPacketQueue *pkt_queue, AVFrameQueue *frame_queue);
+public slots:
     virtual void start(Priority pri = InheritPriority);
     virtual void stop();
     virtual void pause();
     virtual void resume();
-private:
-    virtual void loopRunnable();
-    AVFrameQueue *frame_queue=nullptr;
-    AVDecodeThreader decode_thd;
-    bool frameFinished= false;
-
-    int audio_stream_time =0;
-    int curr_playing_ms = 0;
-    AVDemuxThreader * demuxer=nullptr;
-    AVResample av_resample;
-    AudioRender audio_render;
-public slots:
-signals:
+    void freeParameters(AVController * controller);
+    AVController *initParameters(AVController * controller);
 };
-#endif // AUDIODECODETHREADER_H
+#endif // AUDIODECODER_H

@@ -1,7 +1,7 @@
 #include "VideoDecoder.h"
 
 VideoDecoder::VideoDecoder(QWidget *parent)
-    : Threader{parent},
+    : AtomThreader{parent},
     render(new VideoRender(parent))
 {}
 
@@ -62,6 +62,9 @@ void VideoDecoder::resize(int w, int h)
 
 void VideoDecoder::loopRunnable()
 {
+    if(frameFinished){
+        AtomThreader::usleep(10);
+    }
     if(state()==Running && !frameFinished){
         if (controller->get_video_synchronize() > controller->get_master_synchronize())
         {
@@ -95,22 +98,22 @@ void VideoDecoder::loopRunnable()
 
 void VideoDecoder::start(Priority pri)
 {
-    Threader::start(pri);
+    AtomThreader::start(pri);
 }
 
 void VideoDecoder::stop()
 {
-    Threader::stop();
+    AtomThreader::stop();
 }
 
 void VideoDecoder::pause()
 {
-    Threader::pause();
+    AtomThreader::pause();
 }
 
 void VideoDecoder::resume()
 {
-    Threader::resume();
+    AtomThreader::resume();
 }
 
 void VideoDecoder::BuildDecoder(AVCodecContext *codec_ctx,AVPacketQueue *pkt_queue,AVFrameQueue *frame_queue)

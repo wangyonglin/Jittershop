@@ -6,10 +6,10 @@ HEADERS += \
     $$PWD/AVPacketQueue.h \
     $$PWD/AVResample.h \
     $$PWD/AVSynchronize.h \
+    $$PWD/AtomThreader.h \
     $$PWD/AudioDecoder.h \
     $$PWD/AudioRender.h \
     $$PWD/QFFmpeg.h \
-    $$PWD/Threader.h \
     $$PWD/VideoDecoder.h \
     $$PWD/VideoRender.h
 
@@ -21,10 +21,10 @@ SOURCES += \
     $$PWD/AVPacketQueue.cpp \
     $$PWD/AVResample.cpp \
     $$PWD/AVSynchronize.cpp \
+    $$PWD/AtomThreader.cpp \
     $$PWD/AudioDecoder.cpp \
     $$PWD/AudioRender.cpp \
     $$PWD/QFFmpeg.cpp \
-    $$PWD/Threader.cpp \
     $$PWD/VideoDecoder.cpp \
     $$PWD/VideoRender.cpp
 

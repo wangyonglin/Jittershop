@@ -2,13 +2,13 @@
 #define AUDIODECODER_H
 #include <QPointer>
 #include "QFFmpeg.h"
-#include "Threader.h"
+#include "AtomThreader.h"
 #include "AudioRender.h"
 #include "AVPacketQueue.h"
 #include "AVFrameQueue.h"
 #include "AVResample.h"
 #include "AVController.h"
-class AudioDecoder : public Threader
+class AudioDecoder : public AtomThreader
 {
     Q_OBJECT
 public:

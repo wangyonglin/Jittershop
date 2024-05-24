@@ -4,7 +4,7 @@
 
 
 AudioDecoder::AudioDecoder(QObject *parent)
-    : Threader(parent)
+    : AtomThreader(parent)
 {
 }
 
@@ -13,21 +13,21 @@ AudioDecoder::~AudioDecoder()
 }
 void AudioDecoder::start(Priority pri)
 {
-    Threader::start(pri);
+    AtomThreader::start(pri);
 }
 
 void AudioDecoder::stop()
 {
-    Threader::stop();
+    AtomThreader::stop();
 }
 void AudioDecoder::pause()
 {
-    Threader::pause();
+    AtomThreader::pause();
 }
 
 void AudioDecoder::resume()
 {
-    Threader::resume();
+    AtomThreader::resume();
 }
 
 AVController *AudioDecoder::initParameters(AVController * controller){
@@ -81,7 +81,9 @@ void AudioDecoder::freeParameters(AVController * controller){
 
 void AudioDecoder::loopRunnable()
 {
-
+    if(frameFinished){
+        AtomThreader::usleep(10);
+    }
     if(state()==Running && !frameFinished){
         if (controller->get_audio_synchronize() > controller->get_master_synchronize())
         {

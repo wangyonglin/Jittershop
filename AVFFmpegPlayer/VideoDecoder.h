@@ -2,11 +2,11 @@
 #define VIDEODECODER_H
 
 #include <QObject>
-#include "Threader.h"
+#include "AtomThreader.h"
 #include "VideoRender.h"
 #include "AVController.h"
 
-class VideoDecoder : public Threader
+class VideoDecoder : public AtomThreader
 {
     Q_OBJECT
 public:

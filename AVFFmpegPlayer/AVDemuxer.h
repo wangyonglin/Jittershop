@@ -1,10 +1,10 @@
 #ifndef AVDEMUXER_H
 #define AVDEMUXER_H
-#include "Threader.h"
+#include "AtomThreader.h"
 #include <QObject>
 
 #include "AVController.h"
-class AVDemuxer : public Threader
+class AVDemuxer : public AtomThreader
 {
     Q_OBJECT
 public:
@@ -21,8 +21,7 @@ public slots:
     AVController* initParameters(AVController *controller);
     void freeParameters(AVController *controller);
 private:
-    virtual void loopRunnable();
-
+    virtual void loopRunnable() Q_DECL_OVERRIDE;
 };
 
 #endif // AVDEMUXER_H

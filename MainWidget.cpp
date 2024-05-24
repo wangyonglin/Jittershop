@@ -29,9 +29,9 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
             event->ignore();
         }
     }else if(event->key() == Qt::Key_F11){
-        player->play("/home/wangyonglin/视频/252977_video.mp4");
+        player->play("/home/wangyonglin/视频/713991376-1-192.mp4");
     }else if(event->key() == Qt::Key_F12){
-        player->play("/home/wangyonglin/视频/401141_video.mp4");
+        player->play("/home/wangyonglin/视频/405348542-1-16.mp4");
     }else if(event->key() == Qt::Key_F8){
         player->play("/home/wangyonglin/视频/202223014-1-16.mp4");
 

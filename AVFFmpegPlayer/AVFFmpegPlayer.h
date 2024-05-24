@@ -9,10 +9,9 @@
 #include <QWidget>
 #include <QObject>
 #include <QString>
-#include "Threader.h"
-
 #include "AVDemuxer.h"
 #include "VideoDecoder.h"
+
 class AVFFmpegPlayer : public QWidget
 {
     Q_OBJECT
@@ -20,10 +19,10 @@ public:
 
     explicit AVFFmpegPlayer(QWidget *parent = nullptr);
     ~AVFFmpegPlayer();
-
     virtual void resizeEvent(QResizeEvent *event);
     void play(const QString &url);
     void free();
+
 private:
     AVDemuxer *av_demux;
     AudioDecoder *audio_dec;
@@ -31,7 +30,7 @@ private:
     AVController * controller;
 
 signals:
-    void start(Threader::Priority pri = Threader::InheritPriority);
+    void start(AtomThreader::Priority pri = AtomThreader::InheritPriority);
 public slots:
 
 };

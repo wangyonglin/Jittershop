@@ -1,6 +1,6 @@
 #include "AVDemuxer.h"
 AVDemuxer::AVDemuxer(QObject *parent)
-    : Threader{parent}
+    : AtomThreader{parent}
 {
 
 }
@@ -37,31 +37,34 @@ void AVDemuxer::freeParameters(AVController *controller){
 
 void AVDemuxer::start(Priority pri)
 {
-    Threader::start(pri);
+    AtomThreader::start(pri);
 }
 
 void AVDemuxer::stop()
 {
 
-    Threader::stop();
+    AtomThreader::stop();
 }
 
 void AVDemuxer::pause()
 {
 
-    Threader::pause();
+    AtomThreader::pause();
 
 }
 
 void AVDemuxer::resume()
 {
-    Threader::resume();
+    AtomThreader::resume();
 }
 
 void AVDemuxer::loopRunnable()
 {
-
+    if(frameFinished){
+        AtomThreader::usleep(10);
+    }
     if(state() ==Running && !frameFinished){
+
         controller->start_synchronize();
         if(controller->audio_pkt_queue->size() > 10 || controller->video_pkt_queue->size() >10){
             QThread::usleep(200);

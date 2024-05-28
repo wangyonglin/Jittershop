@@ -2,15 +2,20 @@
 
 
 MainWidget::MainWidget(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+    snowboy_wrapper(new SnowboyWrapper)
 
 {
+    QString resource_filename = "/home/wangyonglin/PcmCaptureAndPlay/resources/common.res";
+    QString model_filename = "/home/wangyonglin/PcmCaptureAndPlay/resources/models/snowboy.umdl";
+    snowboy_wrapper->InitDetect(resource_filename,model_filename);
+    snowboy_wrapper->start();
     player=new AVFFmpegPlayer(this);
-
     player->play("/home/wangyonglin/视频/oceans.mp4");
 }
 
 MainWidget::~MainWidget() {
+    delete snowboy_wrapper;
     delete player;
 }
 
@@ -21,6 +26,7 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
         // 弹出确认对话框
         if (QMessageBox::question(this, "退出", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             // 如果用户选择"是"，则继续关闭窗口
+             snowboy_wrapper->stop();
             player->free();
             QApplication::exit(); // 退出程序
             event->accept();
@@ -43,6 +49,7 @@ void MainWidget::closeEvent(QCloseEvent *event)
     // 弹出确认对话框
     if (QMessageBox::question(this, "退出", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         // 如果用户选择"是"，则继续关闭窗口
+        snowboy_wrapper->stop();
         player->free();
         QApplication::exit(); // 退出程序
         event->accept();

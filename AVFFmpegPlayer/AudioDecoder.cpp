@@ -47,7 +47,7 @@ AVController *AudioDecoder::initParameters(AVController * controller){
     //    if(AV_CODEC_ID_H264 == codec_ctx_->codec_id)
     //        codec = avcodec_find_decoder_by_name("h264_qsv");
     //    else
-    AVCodec * codec = avcodec_find_decoder(controller->audio_codec_ctx->codec_id); //作业： 硬件解码
+  const  AVCodec * codec = avcodec_find_decoder(controller->audio_codec_ctx->codec_id); //作业： 硬件解码
     if(!codec) {
         qDebug() << "avcodec_find_decoder failed";
         avcodec_free_context(&controller->audio_codec_ctx);

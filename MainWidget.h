@@ -6,7 +6,8 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include "AVFFmpegPlayer/AVFFmpegPlayer.h"
-#include "SnowboyWrapper/SnowboyWrapper.h"
+#include "QEngine/QVoiceAssistant.h"
+
 class MainWidget : public QWidget
 {
     Q_OBJECT
@@ -18,6 +19,6 @@ public:
     virtual void closeEvent(QCloseEvent *event) override;
 private:
     AVFFmpegPlayer * player=nullptr;
-    SnowboyWrapper *snowboy_wrapper=nullptr;
+    QVoiceAssistant *voice=nullptr;
 };
 #endif // MAINWIDGET_H

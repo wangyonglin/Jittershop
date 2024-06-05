@@ -3,20 +3,21 @@
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent),
-    snowboy_wrapper(new SnowboyWrapper)
+    voice(new QVoiceAssistant(parent))
 
 {
-    QString resource_filename = "/home/wangyonglin/PcmCaptureAndPlay/resources/common.res";
-    QString model_filename = "/home/wangyonglin/PcmCaptureAndPlay/resources/models/snowboy.umdl";
-    snowboy_wrapper->InitDetect(resource_filename,model_filename);
-    snowboy_wrapper->start();
-    player=new AVFFmpegPlayer(this);
-    player->play("/home/wangyonglin/视频/oceans.mp4");
+
+
+    // player=new AVFFmpegPlayer(this);
+    // player->play("/home/wangyonglin/视频/713991376-1-192.mp4");
+    voice->InitVoiceAssistant();
+    voice->loopStart();
+
+
 }
 
 MainWidget::~MainWidget() {
-    delete snowboy_wrapper;
-    delete player;
+
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *event)
@@ -26,8 +27,9 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
         // 弹出确认对话框
         if (QMessageBox::question(this, "退出", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             // 如果用户选择"是"，则继续关闭窗口
-             snowboy_wrapper->stop();
-            player->free();
+            voice->loopStop();
+
+            // player->free();
             QApplication::exit(); // 退出程序
             event->accept();
         } else {
@@ -35,11 +37,11 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
             event->ignore();
         }
     }else if(event->key() == Qt::Key_F11){
-        player->play("/home/wangyonglin/视频/713991376-1-192.mp4");
+        //   player->play("/home/wangyonglin/视频/713991376-1-192.mp4");
     }else if(event->key() == Qt::Key_F12){
-        player->play("/home/wangyonglin/视频/405348542-1-16.mp4");
+        //  player->play("/home/wangyonglin/视频/405348542-1-16.mp4");
     }else if(event->key() == Qt::Key_F8){
-        player->play("/home/wangyonglin/视频/202223014-1-16.mp4");
+        //  player->play("http://vjs.zencdn.net/v/oceans.mp4");
 
     }
 }
@@ -49,8 +51,7 @@ void MainWidget::closeEvent(QCloseEvent *event)
     // 弹出确认对话框
     if (QMessageBox::question(this, "退出", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         // 如果用户选择"是"，则继续关闭窗口
-        snowboy_wrapper->stop();
-        player->free();
+        // player->free();
         QApplication::exit(); // 退出程序
         event->accept();
     } else {

@@ -44,7 +44,7 @@ typedef struct{
 
 typedef struct{
     AVCodecContext *codec_ctx=nullptr;
-    AVCodec * codec=nullptr;
+    const AVCodec * codec=nullptr;
     qint64 start_time=0;
     AVRational time_base={0,0};
 }QFFmpegDecode;
@@ -75,7 +75,7 @@ QByteArray BuildResampler(QFFmpegResample * ffmpegResample,AVFrame *frame);
 
 void FreeResampler(QFFmpegResample * ffmpegResample);
 
-void  AVPacketFreeBind(AVPacket* pkt);
+
 
 QImage AVFrame2RGBA8888(AVFrame *frame);
 AVCodecContext * BuildDecoder(AVCodecParameters *codecpar);

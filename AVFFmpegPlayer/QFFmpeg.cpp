@@ -230,12 +230,6 @@ void QFFmpeg::FreeResampler(QFFmpegResample *ffmpegResample)
     delete ffmpegResample;
 }
 
-void QFFmpeg::AVPacketFreeBind(AVPacket *pkt)
-{
-    av_free_packet(pkt);
-    av_packet_unref(pkt);
-}
-
 
 QImage QFFmpeg::AVFrame2RGBA8888(AVFrame *frame)
 {
@@ -245,7 +239,7 @@ QImage QFFmpeg::AVFrame2RGBA8888(AVFrame *frame)
 
     QImage img(frame->width, frame->height, QImage::Format_RGBA8888);
 
-    SwsContext* sws_ctx = sws_getContext(frame->width,
+     struct SwsContext* sws_ctx = sws_getContext(frame->width,
                                          frame->height,
                                          static_cast<enum AVPixelFormat>(frame->format),
                                          frame->width,
@@ -296,7 +290,7 @@ AVCodecContext * QFFmpeg::BuildDecoder(AVCodecParameters *codecpar)
     //    if(AV_CODEC_ID_H264 == codec_ctx_->codec_id)
     //        codec = avcodec_find_decoder_by_name("h264_qsv");
     //    else
-   AVCodec * codec = avcodec_find_decoder(codec_ctx->codec_id); //作业： 硬件解码
+  const AVCodec * codec = avcodec_find_decoder(codec_ctx->codec_id); //作业： 硬件解码
     if(!codec) {
         qDebug() << "avcodec_find_decoder failed";
         avcodec_free_context(&codec_ctx);

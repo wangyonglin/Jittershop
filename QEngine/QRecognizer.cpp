@@ -6,6 +6,7 @@ QRecognizer::QRecognizer(QObject *parent)
 
 bool QRecognizer::InitRecognizer(int32_t num_threads ,QString method)
 {
+    display= CreateDisplay();
     sherpa_ncnn::RecognizerConfig config;
     //初始化默认配置
     SetDefaultConfigurations(config);
@@ -35,42 +36,45 @@ bool QRecognizer::InitRecognizer(int32_t num_threads ,QString method)
 void QRecognizer::BuildRecognizer(QByteArray & bytes)
 {
     if(bytes.isEmpty())return;
-
-    std::vector<float> samples_data;
+    // 确保data的大小是4的倍数
+    if (bytes.size() % sizeof(float) != 0) {
+        // 处理错误，例如抛出异常或返回空向量
+        return;
+    }
+    std::vector<float> floatVector;
     QDataStream data_stream(bytes);
     data_stream.setByteOrder(QDataStream::LittleEndian);
     while (!data_stream.atEnd()) {
         qint16 sample;
         data_stream >> sample;
-        samples_data.push_back(sample);
+        floatVector.push_back(sample);
     }
     std::string last_text;
-    //音频时长
-    const float duration = samples_data.size() / expected_sampling_rate;
-    //std::cout << "wav duration (s): " << duration << "\n";
-
     //开始推理
     auto begin = std::chrono::steady_clock::now();
-    //std::cout << "Started!\n";
-    // Add some tail padding
     if (1) {
-        stream->AcceptWaveform(expected_sampling_rate, samples_data.data(),samples_data.size());
-        std::vector<float> tail_paddings(static_cast<int>(0.3 * expected_sampling_rate));  // 0.3 seconds at 16 kHz sample rate
-        stream->AcceptWaveform(expected_sampling_rate, tail_paddings.data(),tail_paddings.size());
-
+        stream->AcceptWaveform(expected_sampling_rate, floatVector.data(),floatVector.size());
+        // std::vector<float> tail_paddings(static_cast<int>(0.3 * expected_sampling_rate));  // 0.3 seconds at 16 kHz sample rate
+        //  stream->AcceptWaveform(expected_sampling_rate, tail_paddings.data(),tail_paddings.size());
         stream->InputFinished();
-
         while (recognizer->IsReady(stream.get())) {
             recognizer->DecodeStream(stream.get());
         }
-
+        bool is_endpoint = recognizer->IsEndpoint(stream.get());
         auto text = recognizer->GetResult(stream.get()).text;
         if (!text.empty() && last_text != text) {
             last_text = text;
             std::transform(text.begin(), text.end(), text.begin(),
                            [](auto c) { return std::tolower(c); });
-            // display->Print(segment_index, text);
-            qDebug() << last_text.data();
+             display->Print(segment_index, text);
+
+           // qDebug() << last_text.data();
+        }
+        if (is_endpoint) {
+            if (!text.empty()) {
+                (segment_index)++;
+            }
+            recognizer->Reset(stream.get());
         }
     }
 
@@ -90,4 +94,20 @@ void QRecognizer::SetDefaultConfigurations(sherpa_ncnn::RecognizerConfig &config
     const float expected_sampling_rate = 16000;
     config.feat_config.sampling_rate = expected_sampling_rate;
     config.feat_config.feature_dim = 80;
+}
+
+std::unique_ptr<sherpa_ncnn::Display> QRecognizer::CreateDisplay() {
+    std::string val;
+    SET_STRING_BY_ENV(val, "SHERPA_NCNN_SIMPLE_DISLAY");
+
+    std::transform(val.begin(), val.end(), val.begin(),
+                   [](auto c) { return std::tolower(c); });
+
+    if (val == "on" || val == "true") {
+        std::string label;
+        SET_STRING_BY_ENV(label, "SHERPA_NCNN_DISPLAY_LABEL");
+        return std::make_unique<SimpleDisplay>(label);
+    } else {
+        return std::make_unique<sherpa_ncnn::Display>();
+    }
 }

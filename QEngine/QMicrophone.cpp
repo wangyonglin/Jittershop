@@ -34,8 +34,6 @@ bool QMicrophone::InitMicrophone(int sampleRate,int channelCount,int sampleSize)
         qDebug() << "device available";
         return true;
     }
-
-
     return false;
 }
 

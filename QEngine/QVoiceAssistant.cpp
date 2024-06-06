@@ -28,6 +28,6 @@ void QVoiceAssistant::loopRunnable()
 {
     QByteArray bytes= qMicrophone->ReadAll();
     qRecognizer->BuildRecognizer(bytes);
-    qSpeaker->PlaySpeaker(bytes);
+   qSpeaker->PlaySpeaker(bytes);
 }
 
